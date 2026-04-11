@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { defaultFarmParams } from "../constants/farmOptions";
 import type { FarmParams } from "../types/farm.types";
-// this is a comment
+// this is a comment for testing purposes
 type FarmState = {
   selectedFarmId: string | null;
   params: FarmParams;
