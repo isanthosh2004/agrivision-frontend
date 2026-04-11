@@ -3,7 +3,7 @@ import type { AuthResponse } from "../types/auth.types";
 import type { ApiResponse } from "../types/common.types";
 import { useAuthStore } from "../store/authStore";
 
-const baseURL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080/api";
+const baseURL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8081/api";
 
 export const apiClient = axios.create({
   baseURL,
