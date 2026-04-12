@@ -7,6 +7,10 @@ export type FarmResponse = {
   region: string;
   soilType: string;
   areaAcres: number;
+  latitude?: number | null;
+  longitude?: number | null;
+  description?: string | null;
+  active?: boolean;
 };
 
 export async function listFarms(page = 0, size = 50) {
