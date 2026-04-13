@@ -13,7 +13,22 @@ export type FarmResponse = {
   active?: boolean;
 };
 
+export type CreateFarmBody = {
+  name: string;
+  region: string;
+  soilType: string;
+  areaAcres: number;
+  latitude?: number;
+  longitude?: number;
+  description?: string;
+};
+
 export async function listFarms(page = 0, size = 50) {
   const res = await apiClient.get<ApiResponse<{ content: FarmResponse[] }>>(`/farms?page=${page}&size=${size}`);
   return res.data.data.content;
+}
+
+export async function createFarm(body: CreateFarmBody) {
+  const res = await apiClient.post<ApiResponse<FarmResponse>>("/farms", body);
+  return res.data.data;
 }
