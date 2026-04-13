@@ -1,21 +1,34 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { createFarm, listFarms } from "../api/farm.api";
+import { regionOptions } from "../constants/farmOptions";
 import { useFarmStore } from "../store/farmStore";
 
 export function DashboardPage() {
   const queryClient = useQueryClient();
   const setFarm = useFarmStore((s) => s.setFarm);
+  const setParams = useFarmStore((s) => s.setParams);
   const selectedFarmId = useFarmStore((s) => s.selectedFarmId);
   const [farmForm, setFarmForm] = useState({
     name: "",
-    region: "",
+    region: regionOptions[0] ?? "",
     soilType: "",
     areaAcres: "",
   });
   const { data, isLoading, error } = useQuery({ queryKey: ["farms"], queryFn: () => listFarms() });
+
+  useEffect(() => {
+    if (!data?.length || !selectedFarmId) return;
+    const selectedFarm = data.find((farm) => farm.id === selectedFarmId);
+    if (!selectedFarm) return;
+    setParams({
+      region: selectedFarm.region,
+      soilType: selectedFarm.soilType,
+      areaAcres: Number(selectedFarm.areaAcres),
+    });
+  }, [data, selectedFarmId, setParams]);
   const createFarmMutation = useMutation({
     mutationFn: async () => {
       const area = Number(farmForm.areaAcres);
@@ -34,7 +47,12 @@ export function DashboardPage() {
     },
     onSuccess: async (farm) => {
       setFarm(farm.id);
-      setFarmForm({ name: "", region: "", soilType: "", areaAcres: "" });
+      setParams({
+        region: farm.region,
+        soilType: farm.soilType,
+        areaAcres: Number(farm.areaAcres),
+      });
+      setFarmForm({ name: "", region: regionOptions[0] ?? "", soilType: "", areaAcres: "" });
       await queryClient.invalidateQueries({ queryKey: ["farms"] });
       toast.success("Farm created and selected.");
     },
@@ -86,11 +104,17 @@ export function DashboardPage() {
           </label>
           <label className="text-sm">
             <div className="text-white/70">Region</div>
-            <input
+            <select
               className="mt-1 w-full rounded-md border border-agri-border bg-agri-surface px-3 py-2"
               value={farmForm.region}
               onChange={(e) => setFarmForm((prev) => ({ ...prev, region: e.target.value }))}
-            />
+            >
+              {regionOptions.map((region) => (
+                <option key={region} value={region}>
+                  {region}
+                </option>
+              ))}
+            </select>
           </label>
           <label className="text-sm">
             <div className="text-white/70">Soil type</div>
